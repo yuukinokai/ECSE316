@@ -23,7 +23,7 @@ public class Client {
 	public void sendRequest() {
 		//create Datagram
 		try {
-			byte[] sendData = new byte[1024];
+			byte[] sendData = this.sendData;
 			byte[] receiveData = new byte[1024];
 			
 			DatagramSocket clientSocket = new DatagramSocket();
