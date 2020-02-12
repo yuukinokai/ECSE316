@@ -1,36 +1,52 @@
 package DNS;
 
 public class Assignment1 {
-	private int timeout = 5000; //time in ms
-	private int maxRetries = 3;
-	private int port = 53;
-	private QueryType queryType = QueryType.A;
-	private String name;
-	private String serverAddress; //IPv4 address of the DNS server
+	static private int timeout = 5000; //time in ms
+	static private int maxRetries = 3;
+	static private int port = 53;
+	static private QueryType queryType = QueryType.A;
+	static private String name;
+	static private String serverAddress; //IPv4 address of the DNS server
 	
 	
 	public static void main(String args[]) throws Exception {
         try {
         	int argsLength = args.length;
+        	
+        	if(argsLength < 2 || argsLength > 9) {
+        		throw new Exception("Wrong number of arguments.");
+        	}
         	for(int i = 0; i < argsLength; i++) {
-        		switch(args[i]) {
-        		case "-t":
-        			//get timeout
-        			break;
-        		case "-r":
-        			//get retries
-        			break;
-        		case "mx":
-        			//change query type
-        			break;
-        		case "ns":
-        			//change query type
-        			break;
-        		default:
-        			
+        		String arg = args[i];
+        		if(arg.compareTo("-t")==0) {
+        			timeout = Integer.parseInt(args[i+1]) * 1000;
+        			i++;
+        		}
+        		else if(arg.compareTo("-r")==0) {
+        			maxRetries = Integer.parseInt(args[i+1]);
+        			i++;
+        		}
+        		else if(arg.compareTo("-p")==0) {
+        			port = Integer.parseInt(args[i+1]);
+        			i++;
+        		}
+        		else if(arg.compareTo("-mx")==0) {
+        			queryType = QueryType.MX;
+        		}
+        		else if(arg.compareTo("-ns")==0) {
+        			queryType = QueryType.NS;
+        		}
+        		else if(arg.charAt(0) == '@') {
+        			serverAddress = arg.substring(1);
+        		}
+        		else if(i == argsLength - 1){
+        			name = arg;
         		}
         	}
-        	//TODO: parse arguments
+        	if(name == null || serverAddress == null) {
+        		throw new Exception("Please enter server address and name");
+        	}
+        	System.out.println("Timeout: " + timeout + ", max_retries: " + maxRetries + ", port: " + port + ", address: "+ serverAddress + ", name: " + name);
         	
             //DnsClient client = new DnsClient(args);
             //client.makeRequest();
