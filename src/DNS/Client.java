@@ -37,13 +37,14 @@ public class Client {
 		//Loop for the number of times it will retry
 		for(int i = maxRetries; i > 0; i--) {
 			try {
-				byte[] requestData = new byte[1024];
-				byte[] responseData = new byte[1024];
-				
 				//Open socket
 				DatagramSocket clientSocket = new DatagramSocket();
 				clientSocket.setSoTimeout(timeout);
 				InetAddress inetAddr = InetAddress.getByAddress(ipAddress);
+				Request DNSrequest = new Request(queryType, name);
+				
+				byte[] requestData = DNSrequest.getDNSRequest();
+				byte[] responseData = new byte[1024];
 				
 				long startTime = System.currentTimeMillis();
 				
