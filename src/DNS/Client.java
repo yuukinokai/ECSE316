@@ -27,7 +27,7 @@ public class Client {
 	 */
 	public Response sendRequest(String name, String serverAddress, QueryType queryType,int timeout, byte[] ipAddress,
 			int port, int maxRetries) throws Exception {
-		Response response = new Response();
+		Response response = new Response(queryType);
 		
 		//Print the information
 		System.out.println("DnsClient sending request for " + name);
