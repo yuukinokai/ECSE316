@@ -63,7 +63,7 @@ public class Client {
 				
 				//print time
 				long timeTaken = endTime - startTime;
-				System.out.println("Response received after "+ timeTaken/1000+ " seconds ("+ (maxRetries-i) + " retries)");
+				System.out.println("Response received after "+ timeTaken/1000.0 + " seconds ("+ (maxRetries-i) + " retries)");
 
 				return response;
 			} catch (Exception e) {
