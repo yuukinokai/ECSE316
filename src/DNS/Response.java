@@ -50,7 +50,7 @@ public class Response {
     }
     
     private boolean isTrueBit(byte b, int shift) {
-    	return (b >> shift) == 1;
+    	return ((b >> shift) & 1) == 1;
     }
     
     private short bytesToShort(byte b1, byte b2) {
