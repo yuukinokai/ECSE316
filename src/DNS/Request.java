@@ -3,6 +3,11 @@ package DNS;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
+/**
+ * This class creates a Request that the server can send via the socket.
+ * @author Sophie and Mia
+ *
+ */
 public class Request {
 	private QueryType queryType;
 	private String domain;
@@ -20,8 +25,8 @@ public class Request {
 	}
 
 	/**
-	 * Getter method that returns the complete DNS request consisting of the header and DNSQuestions
-	 * @return byte[]
+	 * Getter method that returns the complete DNS request consisting of the header and DNSQuestions.
+	 * @return DNS request in the form of byte[].
 	 * @throws Exception If query type is wrong.
 	 */
 
@@ -36,8 +41,8 @@ public class Request {
 	}
 
 	/**
-	 * Method that creates the DNS header
-	 * @return byte[]
+	 * Method that creates the DNS header.
+	 * @return The byte[] of the header.
 	 */
 
 	private byte[] createDNSHeader() {
@@ -61,9 +66,9 @@ public class Request {
 	}
 
 	/**
-	 * Method that creates the DNSQuestions header
+	 * Method that creates the DNSQuestions.
 	 * @param questionsLen: Length of DNSQuestions
-	 * @return byte[]
+	 * @return The DNS question byte[].
 	 * @throws Exception If the query type is a wrong type.
 	 */
 
@@ -80,8 +85,8 @@ public class Request {
 	}
 
 	/** 
-	 * Method that fills the QNAME section of DNSquestions
-	 * @param question
+	 * Method that fills the QNAME section of DNSquestions.
+	 * @param question byte buffer
 	 */
 	private void qName(ByteBuffer question) {
 		String[] labels = this.domain.split("\\.");
@@ -101,8 +106,8 @@ public class Request {
 	}
 
 	/** 
-	 * Method that fills the QTYPE section of DNSquestions 
-	 * @param question
+	 * Method that fills the QTYPE section of DNSquestions.
+	 * @param question byte buffer
 	 * @throws Exception If query type is wrong.
 	 */
 
@@ -126,8 +131,8 @@ public class Request {
 	}
 
 	/** 
-	 * Method that fills the QCLASS section of DNSquestions 
-	 * @param question
+	 * Method that fills the QCLASS section of DNSquestions. 
+	 * @param question byte buffer
 	 */
 
 	private void qClass(ByteBuffer question) {
