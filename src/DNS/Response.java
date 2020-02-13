@@ -56,4 +56,64 @@ public class Response {
     private short bytesToShort(byte b1, byte b2) {
         return (short) ((b1 << 8) | (b2 & 0xFF));
     }
+    
+    public void readAnswer() {
+	    //The answer record begins at the 32nd octet
+    	AnswerRecord ar = new AnswerRecord();
+    	int index = 32;
+	    //NAME
+//    	ar.setName((byte) response[index]);
+//    	index += response[index];
+	    //TYPE
+    	ar.setQueryType(this.queryType);
+	    //CLASS
+    	//ar.setQClass(response[index]);
+	    //TTL
+	    //RDLENGTH
+	    //RDATA
+	    //PREFERENCE
+	    //EXCHANGE
+	}
+    
+    public class AnswerRecord {
+    	private String name;
+    	private QueryType qType;
+    	private byte[] qClass;
+    	private int ttl, rdLenth;
+    	
+    	public AnswerRecord() {
+    		
+    	}
+    	
+    	public AnswerRecord(String name, QueryType type, byte[] qClass, int ttl, int rdlen) {
+    		this.name = name;
+    		this.qType = type;
+    		this.qClass = qClass;
+    		this.ttl = ttl;
+    		this.rdLenth = rdlen;
+    	}
+    	
+    	public void setName(String name) {
+    		this.name = name;
+    	}
+    	
+    	public void setQueryType(QueryType q) {
+    		this.qType = q;
+    	}
+    	
+    	public void setQClass(byte[] qClass) {
+    		this.qClass = qClass;
+    	}
+    	
+    	public void setTTL(int ttl) {
+    		this.ttl = ttl;
+    	}
+    	
+    	public void setRDLength(int rdlen) {
+    		this.rdLenth = rdlen;
+    	}
+    	
+  	 
+  }
+
 }
