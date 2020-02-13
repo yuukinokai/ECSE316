@@ -13,9 +13,9 @@ public class Request {
 	private String domain;
 
 	//CONSTANTS 
-	private int QTYPE = 2;
-	private int QCLASS = 2;
-	private int ZERO_OCTET = 1;
+	private int QTYPE_BYTES = 2;
+	private int QCLASS_BYTES = 2;
+	private int ZERO_OCTET_BYTES = 1;
 
 	private int HEADER_SIZE = 12;
 
@@ -29,10 +29,10 @@ public class Request {
 	 * @return DNS request in the form of byte[].
 	 * @throws Exception If query type is wrong.
 	 */
-
 	public byte[] getDNSRequest() throws Exception {
+		//Give name the extra byte for the length indicator
 		int qNameLen = domain.length()+ 1;
-		int questionsLen = qNameLen + QTYPE + QCLASS + ZERO_OCTET;
+		int questionsLen = qNameLen + QTYPE_BYTES + QCLASS_BYTES + ZERO_OCTET_BYTES;
 
 		ByteBuffer request = ByteBuffer.allocate(HEADER_SIZE + questionsLen);
 		request.put(createDNSHeader());
@@ -44,7 +44,6 @@ public class Request {
 	 * Method that creates the DNS header.
 	 * @return The byte[] of the header.
 	 */
-
 	private byte[] createDNSHeader() {
 		ByteBuffer header = ByteBuffer.allocate(HEADER_SIZE);
 		//ID
@@ -71,7 +70,6 @@ public class Request {
 	 * @return The DNS question byte[].
 	 * @throws Exception If the query type is a wrong type.
 	 */
-
 	private byte[] createDNSQuestions(int questionsLen) throws Exception {
 		ByteBuffer question = ByteBuffer.allocate(questionsLen);
 		//name
@@ -100,7 +98,6 @@ public class Request {
 			}
 
 		}
-
 		//zero-octet
 		question.put((byte) 0x00);
 	}
@@ -110,7 +107,6 @@ public class Request {
 	 * @param question byte buffer
 	 * @throws Exception If query type is wrong.
 	 */
-
 	private void qType(ByteBuffer question) throws Exception {
 		//Query Type
 		question.put((byte) 0x00);
@@ -134,7 +130,6 @@ public class Request {
 	 * Method that fills the QCLASS section of DNSquestions. 
 	 * @param question byte buffer
 	 */
-
 	private void qClass(ByteBuffer question) {
 		//always 0x0001 for Internet
 		question.put((byte) 0x00);
