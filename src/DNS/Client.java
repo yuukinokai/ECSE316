@@ -78,23 +78,52 @@ public class Client {
 		throw new Exception("Exceeded number of retries.");
 	}
 
-	//TODO: print read
+	/**
+	 * Method that gets the response and prints it
+	 * @param response
+	 * @throws Exception
+	 */
 	public void readResponse(Response response) throws Exception {
 		response.readHeader();
 		response.readAnswers();
 		AnswerRecord[] ar = response.getAnswers();
 		AnswerRecord[] adr = response.getAdditionalAnswers();
-		if (ar.length == 0 && adr.length == 0) {
+		if(ar.length == 0 && adr.length == 0) {
 			System.out.println("NOTFOUND");
 		}
-		/* ***Answer Section ([num-answers] records)***
-Then, if the response contains A (IP address) records, each should be printed on a line of the form:
-IP <tab> [ip address] <tab> [seconds can cache] <tab> [auth | nonauth]
-Where <tab> is replaced by a tab character. Similarly, if it receives CNAME, MX, or NS records, they should be printed on lines of the form:
-CNAME <tab> [alias] <tab> [seconds can cache] <tab> [auth | nonauth]
-MX <tab> [alias] <tab> [pref] <tab> [seconds can cache] <tab> [auth | nonauth] NS <tab> [alias] <tab> [seconds can cache] <tab> [auth | nonauth]
-If the response contains records in the Additional section then also print:
-		 ***Additional Section ([num-additional] records)***
-along with appropriate lines for each additional record that matches one of the types A, CNAME, MX, or NS. You can ignore any records in the Authority section for this lab. */
+		if(ar.length != 0) {
+			System.out.println("***Answer Section ("+ar.length+" records)***");
+			for(int i=0; i< ar.length;i++) {
+				AnswerRecord answer = ar[i];
+				printAnswer(answer);
+			}
+		}
+		if(adr.length != 0) {
+			System.out.println("***Additional Section ("+adr.length+" records)***\n");
+			for(int i=0; i< adr.length;i++) {
+				AnswerRecord adrAnswer = adr[i];
+				printAnswer(adrAnswer);
+			}
+		}
+	}
+	
+	/**
+	 * Helper method that prints the Answer record
+	 * @param answer
+	 */
+	public void printAnswer(AnswerRecord answer) {
+		QueryType qType = answer.getQueryType();
+		if(qType.equals(QueryType.A)) {
+			System.out.println("IP\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+		}
+		if(qType.equals(QueryType.CNAME)) {
+			System.out.println("CNAME\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+		}
+		if(qType.equals(QueryType.MX)) {
+			System.out.println("MX\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+		}
+		if(qType.equals(QueryType.NS)) {
+			System.out.println("NS\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+		}	
 	}
 }
