@@ -20,10 +20,11 @@ public class Response {
 	private short ARCount = 0; //additional records section
 	private AnswerRecord[] answerRecords;
 	private AnswerRecord[] additionalRecords;
-	private int readIndex = 32;
+	private int readIndex = 31;
 
-	public Response(byte[] r) {
+	public Response(byte[] r, int offset) {
 		response = r;
+		readIndex = offset;
 	}
 
 	public void readHeader() throws Exception {
@@ -68,6 +69,7 @@ public class Response {
 			throw new Exception("QDCount should be 1 but " + QDCount + " was found.");
 		}
 		ANCount = bytesToShort(response[6], response[7]);
+		//System.out.println(ANCount);
 		answerRecords = new AnswerRecord[ANCount];
 		NSCount = bytesToShort(response[8], response[9]);
 		ARCount = bytesToShort(response[10], response[11]);
@@ -106,9 +108,6 @@ public class Response {
 	}
 
 	public void readAnswers() throws Exception {
-		//The answer record begins at the 32nd octet
-		readIndex = 32;
-
 		//Get all answers
 		for(int i = 0; i < ANCount; i++) {
 			answerRecords[i] = getAnswer();
@@ -119,14 +118,63 @@ public class Response {
 			additionalRecords[i] = getAnswer();
 		}
 	}
+	
+	private String getWordAtOffset(int index) {
+		String word = "";
+    	int wordSize = response[index++];
+    	boolean start= true;
+    	while(wordSize != 0) {
+    		if(!start) {
+    			word += ".";
+    		}
+    		for(int i =0; i < wordSize; i++){
+        		word += (char) response[index++];
+    		}		
+    		wordSize = response[index++];
+    		start = false;
+    	}
+    	return word;
+    }
+
+	private String getName() {
+		int index = readIndex;
+		int countByte = 0;
+		String name = "";
+		byte read = response[index];
+		while(read != (short) 0x0) {
+			System.out.print(index + " " + read + " | ");
+			int wordSize = read;
+			index++;
+			countByte++;
+			//check if it is a pointer
+			if ((wordSize & 0xC0) == (int) 0xC0) {
+				System.out.print("Is pointer with offset ");
+				byte first = (byte) (response[index] & 0x3f);
+				System.out.println(first);
+				String word = getWordAtOffset(first);
+				index += 1;
+				countByte += 1;
+				name += word;
+			}
+			else
+			{
+				for(int i = 0; i < wordSize; i++) {
+					name += (char) response[index++] ;
+					countByte++;
+				}
+			}
+			read = response[index];
+		}
+		readIndex += countByte;
+		System.out.println(name);
+		return name;
+	}
 
 	public AnswerRecord getAnswer() throws Exception {
 		AnswerRecord ar = new AnswerRecord();
 
 		//NAME
-		//TODO: get domain name
-		//    	ar.setName((byte) response[index]);
-		//    	TODO: move index
+		ar.setName(getName());
 
 		//TYPE
 		QueryType qt = getQueryTypeFromBytes(readIndex);
@@ -134,7 +182,9 @@ public class Response {
 		readIndex += 2;
 
 		//CLASS
-		short qClass = response[readIndex];
+		byte[] bClass = { response[readIndex], response[readIndex + 1] };
+        ByteBuffer buf = ByteBuffer.wrap(bClass);
+		short qClass = buf.getShort();
 		if(qClass != (short) 0x01) {
 			throw new Exception("Answer CLASS should be 0x01, but " + qClass + " was found instead.");
 		}

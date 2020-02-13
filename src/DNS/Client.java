@@ -68,7 +68,7 @@ public class Client {
 	            long timeTaken = endTime - startTime;
 	            System.out.println("Response received after "+ timeTaken/MILISECONDS + " seconds ("+ (maxRetries-i) + " retries)");
 
-	            Response response = new Response(responsePacket.getData());
+	            Response response = new Response(responsePacket.getData(), requestData.length);
 	            return response;
 			} catch (Exception e) {
 				System.out.println("Error at try " + i + ": "+ e.getMessage());
