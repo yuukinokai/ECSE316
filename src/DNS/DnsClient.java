@@ -35,13 +35,14 @@ public class DnsClient {
 
 			//Send request and read response through client
 			Client client = new Client();
-			client.sendRequest(name, serverAddress, queryType, timeout, ipAddress, port, maxRetries);
-			//client.readResponse(r);
+			Response r = client.sendRequest(name, serverAddress, queryType, timeout, ipAddress, port, maxRetries);
+			client.readResponse(r);
 
 		} catch (Exception e) {
 			System.out.println("Error:\t" + e.getMessage());
 		}
 	}
+	
 	/***
 	 * Parses the input arguments and assigns the class variables.
 	 * @param args Arguments to be parsed.

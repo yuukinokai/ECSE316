@@ -31,7 +31,6 @@ public class Client {
 	 */
 	public Response sendRequest(String name, String serverAddress, QueryType queryType,int timeout, byte[] ipAddress,
 			int port, int maxRetries) throws Exception {
-		Response response = new Response(queryType);
 
 		//Print the information
 		System.out.println("DnsClient sending request for " + name);
@@ -41,35 +40,36 @@ public class Client {
 		//Loop for the number of times it will retry
 		for(int i = maxRetries; i > 0; i--) {
 			try {
+				
 				//Open socket
-				DatagramSocket clientSocket = new DatagramSocket();
-				clientSocket.setSoTimeout(timeout);
-				InetAddress inetAddr = InetAddress.getByAddress(ipAddress);
-				Request DNSrequest = new Request(queryType, name);
+	            DatagramSocket clientSocket = new DatagramSocket();
+	            clientSocket.setSoTimeout(timeout);
+	            InetAddress inetAddr = InetAddress.getByAddress(ipAddress);
+	            Request request = new Request(queryType, name);
 
-				byte[] requestData = DNSrequest.getDNSRequest();
-				byte[] responseData = new byte[MAX_DATA_SIZE];
+	            byte[] requestData = request.getDNSRequest();
+	            byte[] responseData = new byte[MAX_DATA_SIZE];
 
-				long startTime = System.currentTimeMillis();
+	            long startTime = System.currentTimeMillis();
+	            
+	            //Rend Request
+	            DatagramPacket requestPacket = new DatagramPacket(requestData, requestData.length, inetAddr, port);
+	            clientSocket.send(requestPacket);
+	            
+	            //Receive Request
+	            DatagramPacket responsePacket = new DatagramPacket(responseData, MAX_DATA_SIZE);
+	            clientSocket.receive(responsePacket);
+	            
+	            long endTime = System.currentTimeMillis();
+	            
+	            //Close socket
+	            clientSocket.close();
 
-				//Rend Request
-				DatagramPacket requestPacket = new DatagramPacket(requestData, requestData.length, inetAddr, port);
-				clientSocket.send(requestPacket);
+	            long timeTaken = endTime - startTime;
+	            System.out.println("Response received after "+ timeTaken/MILISECONDS + " seconds ("+ (maxRetries-i) + " retries)");
 
-				//Receive Request
-				DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length);
-				clientSocket.receive(requestPacket);
-
-				long endTime = System.currentTimeMillis();
-
-				//close socket
-				clientSocket.close();
-
-				//print time
-				long timeTaken = endTime - startTime;
-				System.out.println("Response received after "+ timeTaken/MILISECONDS + " seconds ("+ (maxRetries-i) + " retries)");
-
-				return response;
+	            Response response = new Response(responsePacket.getData());
+	            return response;
 			} catch (Exception e) {
 				System.out.println("Error at try " + i + ": "+ e.getMessage());
 			}
@@ -78,8 +78,23 @@ public class Client {
 		throw new Exception("Exceeded number of retries.");
 	}
 
-	//TODO: read
-	public void readResponse(Response response) {
-
+	//TODO: print read
+	public void readResponse(Response response) throws Exception {
+		response.readHeader();
+		response.readAnswers();
+		AnswerRecord[] ar = response.getAnswers();
+		AnswerRecord[] adr = response.getAdditionalAnswers();
+		if (ar.length == 0 && adr.length == 0) {
+			System.out.println("NOTFOUND");
+		}
+		/* ***Answer Section ([num-answers] records)***
+Then, if the response contains A (IP address) records, each should be printed on a line of the form:
+IP <tab> [ip address] <tab> [seconds can cache] <tab> [auth | nonauth]
+Where <tab> is replaced by a tab character. Similarly, if it receives CNAME, MX, or NS records, they should be printed on lines of the form:
+CNAME <tab> [alias] <tab> [seconds can cache] <tab> [auth | nonauth]
+MX <tab> [alias] <tab> [pref] <tab> [seconds can cache] <tab> [auth | nonauth] NS <tab> [alias] <tab> [seconds can cache] <tab> [auth | nonauth]
+If the response contains records in the Additional section then also print:
+		 ***Additional Section ([num-additional] records)***
+along with appropriate lines for each additional record that matches one of the types A, CNAME, MX, or NS. You can ignore any records in the Authority section for this lab. */
 	}
 }
