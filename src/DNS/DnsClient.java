@@ -8,7 +8,7 @@ package DNS;
  * @author Sophie and Mia
  *
  */
-public class Assignment1 {
+public class DnsClient {
 	static private int timeout = 5000; //time in ms
 	static private int maxRetries = 3;
 	static private int port = 53;
@@ -39,12 +39,15 @@ public class Assignment1 {
 			//client.readResponse(r);
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error: " + e.getMessage());
+			System.out.println("Error:\t" + e.getMessage());
 		}
 	}
-
-	private static void parseInputArguments(String args[]) throws Exception {
+	/***
+	 * Parses the input arguments and assigns the class variables.
+	 * @param args Arguments to be parsed.
+	 * @throws Exception If input format is not correct.
+	 */
+	public static void parseInputArguments(String args[]) throws Exception {
 		int argsLength = args.length;
 		if(argsLength < MIN_INPUT_ARGUMENTS || argsLength > MAX_INPUT_ARGUMENTS) {
 			throw new Exception("Wrong number of arguments.");
@@ -78,12 +81,36 @@ public class Assignment1 {
 				for(int j = 0; j < IP_SIZE; j++) {
 					int ip = Integer.parseInt(serverSplit[j]);
 					if (ip < MIN_IP || ip > MAX_IP) {
-						throw new Exception("IP Address numbers must be between 0 and 255.");
+						throw new Exception("IP Address numbers must be between " + MIN_IP + " and " + MAX_IP + ".");
 					}
 					ipAddress[j] = (byte) ip;
 				}
 				name = args[i+1];
 			}
 		}
+	}
+	
+	public static String getName() {
+		return name;
+	}
+	
+	public static int getPort() {
+		return port;
+	}
+	
+	public static String getIP() {
+		return serverAddress;
+	}
+
+	public static int getTimeout() {
+		return timeout;
+	}
+
+	public static int getmaxRetries() {
+		return maxRetries;
+	}
+
+	public static QueryType getQueryType() {
+		return queryType;
 	}
 }

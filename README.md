@@ -1,8 +1,8 @@
-# ECSE316
+﻿# ECSE316
 ## Assignment1: DNS Client
 
 ### Structure
-Run Assignment1 with the following input arguments structure:
+Run DnsClient with the following input arguments structure:
 
 [-t timeout] [-r max-retries] [-p port] [-mx|-ns] @server name
 
@@ -21,6 +21,9 @@ type A (IP address) query.
 • server (required) is the IPv4 address of the DNS server, in a.b.c.d. format.
 
 • name (required) is the domain name to query for.
+
+### Example
+java DnsClient -t 10 -r 2 -mx @8.8.8.8 mcgill.ca
 
 ### Java Version
 Tested for JDK 1.7 and 1.8
