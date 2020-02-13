@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 public class Response {
 	private byte[] response = new byte[1024];
 	private short ID = 0;
-	private boolean QR = false; //if its response
-	private boolean AA = false; //if its authoritative
+	private boolean QR = false; //if it's response
+	private boolean AA = false; //if it's authoritative
 	private boolean TC = false; //if it was truncated
 	private boolean RD =  false; //if desired recursion
 	private boolean RA = false; //if server supports recursive queries
