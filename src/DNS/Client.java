@@ -12,7 +12,11 @@ import java.net.InetAddress;
  *
  */
 public class Client {
-	
+
+	//constants
+	private float MILISECONDS = 1000.0f;
+	private int MAX_DATA_SIZE = 1024;
+
 	/**
 	 * This methods creates the request and sends it.
 	 * @param name Name of the server
@@ -28,12 +32,12 @@ public class Client {
 	public Response sendRequest(String name, String serverAddress, QueryType queryType,int timeout, byte[] ipAddress,
 			int port, int maxRetries) throws Exception {
 		Response response = new Response(queryType);
-		
+
 		//Print the information
 		System.out.println("DnsClient sending request for " + name);
 		System.out.println("Server: " + serverAddress);
 		System.out.println("Request type: " + queryType);	
-		
+
 		//Loop for the number of times it will retry
 		for(int i = maxRetries; i > 0; i--) {
 			try {
@@ -42,28 +46,28 @@ public class Client {
 				clientSocket.setSoTimeout(timeout);
 				InetAddress inetAddr = InetAddress.getByAddress(ipAddress);
 				Request DNSrequest = new Request(queryType, name);
-				
+
 				byte[] requestData = DNSrequest.getDNSRequest();
-				byte[] responseData = new byte[1024];
-				
+				byte[] responseData = new byte[MAX_DATA_SIZE];
+
 				long startTime = System.currentTimeMillis();
-				
+
 				//Rend Request
 				DatagramPacket requestPacket = new DatagramPacket(requestData, requestData.length, inetAddr, port);
 				clientSocket.send(requestPacket);
-				
+
 				//Receive Request
 				DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length);
 				clientSocket.receive(requestPacket);
-				
+
 				long endTime = System.currentTimeMillis();
-				
+
 				//close socket
 				clientSocket.close();
-				
+
 				//print time
 				long timeTaken = endTime - startTime;
-				System.out.println("Response received after "+ timeTaken/1000.0 + " seconds ("+ (maxRetries-i) + " retries)");
+				System.out.println("Response received after "+ timeTaken/MILISECONDS + " seconds ("+ (maxRetries-i) + " retries)");
 
 				return response;
 			} catch (Exception e) {
@@ -73,9 +77,9 @@ public class Client {
 		//If it got here, it exceeded the number of tries without a response.
 		throw new Exception("Exceeded number of retries.");
 	}
-	
+
 	//TODO: read
 	public void readResponse(Response response) {
-		
+
 	}
 }
