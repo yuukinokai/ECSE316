@@ -30,7 +30,7 @@ public class DnsClient {
 			parseInputArguments(args);
 
 			if(name == null || serverAddress == null) {
-				throw new Exception("Incorrect input syntax: \"Please enter server address and name\"");
+				throw new Exception("Incorrect input syntax: \"Please enter server address and name.\"");
 			}
 			//System.out.println("Timeout: " + timeout + ", max_retries: " + maxRetries + ", port: " + port + ", address: "+ serverAddress + ", name: " + name);
 
@@ -52,13 +52,13 @@ public class DnsClient {
 	public static void parseInputArguments(String args[]) throws Exception {
 		int argsLength = args.length;
 		if(argsLength < MIN_INPUT_ARGUMENTS || argsLength > MAX_INPUT_ARGUMENTS) {
-			throw new Exception("ERROR\t Incorrect input syntax: \"Wrong number of arguments.\"");
+			throw new Exception("Incorrect input syntax: \"Wrong number of arguments.\"");
 		}
 		
 		for(int i = 0; i < argsLength; i++) {
 			String arg = args[i];
 			if(arg == null) {
-				throw new Exception("Incorrect input syntax: \"Please enter server address and name\"");
+				throw new Exception("Incorrect input syntax: \"Argument was NULL.\"");
 			}
 			if(arg.compareTo("-t") == 0) {
 				timeout = Integer.parseInt(args[i+1]) * 1000;

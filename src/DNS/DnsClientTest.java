@@ -151,7 +151,7 @@ public class DnsClientTest {
         	 fail("No exception.");
 			
 		} catch (Exception e) {
-			String error = "ERROR\t Incorrect input syntax: \"Wrong number of arguments.\"";
+			String error = "Incorrect input syntax: \"Wrong number of arguments.\"";
 			assertEquals(error, e.getMessage());
 		}
       
@@ -166,7 +166,7 @@ public class DnsClientTest {
         	 fail("No exception.");
 			
 		} catch (Exception e) {
-			String error = "ERROR\t Incorrect input syntax: \"Please enter server address and name\"";
+			String error = "Incorrect input syntax: \"Argument was NULL.\"";
 			assertEquals(error, e.getMessage());
 		}
 	}
@@ -180,7 +180,7 @@ public class DnsClientTest {
         	 fail("No exception.");
 			
 		} catch (Exception e) {
-			String error = "ERROR\t Incorrect input syntax: \"Please enter server address and name\"";
+			String error = "Incorrect input syntax: \"Argument was NULL.\"";
 			assertEquals(error, e.getMessage());
 		}
 		
@@ -195,25 +195,25 @@ public class DnsClientTest {
         	 fail("No exception.");
 			
 		} catch (Exception e) {
-			String error = "ERROR\t Incorrect input syntax: \"Wrong IP Address format (a.b.c.d).\"";
+			String error = "Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"";
 			assertEquals(error, e.getMessage());
 		}
 	}
 	
 	@Test
 	public void testMain() {
-		 String[] args = {"8888","mcgill.ca"};
+		 String[] args = new String[]{"8888","mcgill.ca"};
 		    try {
 		    	PrintStream og = System.out;
 		    	ByteArrayOutputStream bf = new ByteArrayOutputStream(1024);
 		    	System.setOut(new PrintStream(bf));
 				DnsClient.main(args);
-				assertEquals("ERROR\t Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"", bf.toString());
+				assertTrue(bf.toString().contains("ERROR"));
+				//assertEquals("ERROR\tIncorrect input syntax: \"Please enter server address and name.\"", bf.toString());
 				System.setOut(og);
 				
 			} catch (Exception e) {
 				fail("No exception.");
-				//assertEquals("ERROR\t Incorrect input syntax: \"Please enter server address and name\"", e.getMessage());
 			}
 	}
 	
@@ -226,7 +226,7 @@ public class DnsClientTest {
         	 fail("No exception.");
 			
 		} catch (Exception e) {
-			String error = "ERROR\t Incorrect input syntax: \"IP Address numbers must be between " + DnsClient.getMinIP() + " and " +  DnsClient.getMaxIP() + ".\"";
+			String error = "Incorrect input syntax: \"IP Address numbers must be between " + DnsClient.getMinIP() + " and " +  DnsClient.getMaxIP() + ".\"";
 			assertEquals(error, e.getMessage());
 		}
 		
