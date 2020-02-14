@@ -1,6 +1,10 @@
 ﻿# ECSE316
 ## Assignment1: DNS Client
 
+### Compiling
+Compile the code in the src folder using the java compiler of your choice.
+Ex: javac *.java
+
 ### Structure
 Run DnsClient with the following input arguments structure:
 
