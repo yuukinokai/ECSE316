@@ -39,8 +39,7 @@ public class DnsClient {
 			client.readResponse(r);
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error:\t" + e.getMessage());
+			System.out.println("Error\t" + e.getMessage());
 		}
 	}
 	
