@@ -16,8 +16,8 @@ public class Response {
 	 *
 	 */
 	class Pair {
-		public String name;
-		public int i;
+		String name;
+		int i;
 	}
 
 	private byte[] response = new byte[1024];

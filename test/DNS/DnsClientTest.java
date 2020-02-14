@@ -3,12 +3,6 @@ package DNS;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import org.junit.After;
 
 
@@ -198,23 +192,6 @@ public class DnsClientTest {
 			String error = "Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"";
 			assertEquals(error, e.getMessage());
 		}
-	}
-	
-	@Test
-	public void testMain() {
-		 String[] args = new String[]{"8888","mcgill.ca"};
-		    try {
-		    	PrintStream og = System.out;
-		    	ByteArrayOutputStream bf = new ByteArrayOutputStream(1024);
-		    	System.setOut(new PrintStream(bf));
-				DnsClient.main(args);
-				assertTrue(bf.toString().contains("ERROR"));
-				//assertEquals("ERROR\tIncorrect input syntax: \"Please enter server address and name.\"", bf.toString());
-				System.setOut(og);
-				
-			} catch (Exception e) {
-				fail("No exception.");
-			}
 	}
 	
 	@Test
