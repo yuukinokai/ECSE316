@@ -28,8 +28,12 @@ public class DnsClient {
 	public static void main(String args[]) throws Exception {
 		try {
 			parseInputArguments(args);
+
 			if(name == null || serverAddress == null) {
-				throw new Exception("Please enter server address and name");
+				throw new Exception("ERROR\t Incorrect input syntax: \"Please enter server address and name\"");
+			}
+			if(serverAddress.charAt(0) != '@') {
+				throw new Exception("ERROR\t Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"");
 			}
 			//System.out.println("Timeout: " + timeout + ", max_retries: " + maxRetries + ", port: " + port + ", address: "+ serverAddress + ", name: " + name);
 
@@ -39,8 +43,8 @@ public class DnsClient {
 			client.readResponse(r);
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error:\t" + e.getMessage());
+			//e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -52,10 +56,14 @@ public class DnsClient {
 	public static void parseInputArguments(String args[]) throws Exception {
 		int argsLength = args.length;
 		if(argsLength < MIN_INPUT_ARGUMENTS || argsLength > MAX_INPUT_ARGUMENTS) {
-			throw new Exception("Wrong number of arguments.");
+			throw new Exception("ERROR\t Incorrect input syntax: \"Wrong number of arguments.\"");
 		}
+		
 		for(int i = 0; i < argsLength; i++) {
 			String arg = args[i];
+			if(arg == null) {
+				throw new Exception("ERROR\t Incorrect input syntax: \"Please enter server address and name\"");
+			}
 			if(arg.compareTo("-t") == 0) {
 				timeout = Integer.parseInt(args[i+1]) * 1000;
 				i++;
@@ -78,18 +86,26 @@ public class DnsClient {
 				serverAddress = arg.substring(1);
 				String[] serverSplit = serverAddress.split("\\.");
 				if(serverSplit.length != IP_SIZE) {
-					throw new Exception("Wrong IP Address formatn (a.b.c.d).");
+					throw new Exception("ERROR\t Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"");
 				}
 				for(int j = 0; j < IP_SIZE; j++) {
 					int ip = Integer.parseInt(serverSplit[j]);
 					if (ip < MIN_IP || ip > MAX_IP) {
-						throw new Exception("IP Address numbers must be between " + MIN_IP + " and " + MAX_IP + ".");
+						throw new Exception("ERROR\t Incorrect input syntax: \"IP Address numbers must be between " + MIN_IP + " and " + MAX_IP + ".\"");
 					}
 					ipAddress[j] = (byte) ip;
 				}
 				name = args[i+1];
 			}
 		}
+	}
+	
+	public static int getMinIP() {
+		return MIN_IP;
+	}
+	
+	public static int getMaxIP() {
+		return MAX_IP;
 	}
 	
 	public static String getName() {
@@ -114,5 +130,9 @@ public class DnsClient {
 
 	public static QueryType getQueryType() {
 		return queryType;
+	}
+	
+	public static void setQueryType(QueryType qtype) {
+		queryType = qtype;
 	}
 }
