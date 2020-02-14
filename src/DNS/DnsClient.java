@@ -30,10 +30,7 @@ public class DnsClient {
 			parseInputArguments(args);
 
 			if(name == null || serverAddress == null) {
-				throw new Exception("ERROR\t Incorrect input syntax: \"Please enter server address and name\"");
-			}
-			if(serverAddress.charAt(0) != '@') {
-				throw new Exception("ERROR\t Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"");
+				throw new Exception("Incorrect input syntax: \"Please enter server address and name\"");
 			}
 			//System.out.println("Timeout: " + timeout + ", max_retries: " + maxRetries + ", port: " + port + ", address: "+ serverAddress + ", name: " + name);
 
@@ -43,7 +40,7 @@ public class DnsClient {
 			client.readResponse(r);
 
 		} catch (Exception e) {
-			System.out.println("Error\t" + e.getMessage());
+			System.out.println("ERROR\t" + e.getMessage());
 		}
 	}
 	
@@ -61,7 +58,7 @@ public class DnsClient {
 		for(int i = 0; i < argsLength; i++) {
 			String arg = args[i];
 			if(arg == null) {
-				throw new Exception("ERROR\t Incorrect input syntax: \"Please enter server address and name\"");
+				throw new Exception("Incorrect input syntax: \"Please enter server address and name\"");
 			}
 			if(arg.compareTo("-t") == 0) {
 				timeout = Integer.parseInt(args[i+1]) * 1000;
@@ -85,12 +82,12 @@ public class DnsClient {
 				serverAddress = arg.substring(1);
 				String[] serverSplit = serverAddress.split("\\.");
 				if(serverSplit.length != IP_SIZE) {
-					throw new Exception("ERROR\t Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"");
+					throw new Exception("Incorrect input syntax: \"Wrong IP Address format (@a.b.c.d).\"");
 				}
 				for(int j = 0; j < IP_SIZE; j++) {
 					int ip = Integer.parseInt(serverSplit[j]);
 					if (ip < MIN_IP || ip > MAX_IP) {
-						throw new Exception("ERROR\t Incorrect input syntax: \"IP Address numbers must be between " + MIN_IP + " and " + MAX_IP + ".\"");
+						throw new Exception("Incorrect input syntax: \"IP Address numbers must be between " + MIN_IP + " and " + MAX_IP + ".\"");
 					}
 					ipAddress[j] = (byte) ip;
 				}
