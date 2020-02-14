@@ -9,6 +9,17 @@ import java.nio.ByteBuffer;
  *
  */
 public class Response {
+
+	/**
+	 * Container class used to store a string and a integer.
+	 * @author Sophie
+	 *
+	 */
+	class Pair {
+		public String name;
+		public int i;
+	}
+
 	private byte[] response = new byte[1024];
 	private short ID = 0;
 	private boolean QR = false; //if it's response
@@ -25,16 +36,16 @@ public class Response {
 	private short ARCount = 0; //additional records section
 	private AnswerRecord[] answerRecords;
 	private AnswerRecord[] additionalRecords;
-	private int readIndex = 31;
+	private int offset = 31;
 
 	/**
 	 * Constructor 
 	 * @param r	The response bytes.
 	 * @param offset The start of the answer bytes.
 	 */
-	public Response(byte[] r, int offset) {
+	public Response(byte[] r, int o) {
 		response = r;
-		readIndex = offset;
+		offset = o;
 	}
 
 	/**
@@ -82,11 +93,11 @@ public class Response {
 		if(QDCount != 1) {
 			throw new Exception("QDCount should be 1 but " + QDCount + " was found.");
 		}
-		ANCount = bytesToShort(response[6], response[7]);
-		//System.out.println(ANCount);
-		answerRecords = new AnswerRecord[ANCount];
+		ANCount = bytesToShort(response[6], response[7]);		
 		NSCount = bytesToShort(response[8], response[9]);
 		ARCount = bytesToShort(response[10], response[11]);
+
+		answerRecords = new AnswerRecord[ANCount];
 		additionalRecords = new AnswerRecord[ARCount];
 	}
 
@@ -111,14 +122,15 @@ public class Response {
 	 * @throws Exception If error was found in the answer.
 	 */
 	public void readAnswers() throws Exception {
-		//Get all answers
-		for(int i = 0; i < ANCount; i++) {
-			answerRecords[i] = getAnswer();
+		int index = offset;
+		for(int i = 0; i < ANCount; i ++){
+			answerRecords[i] = getAnswer(index);
+			index += answerRecords[i].getSize();
 		}
 
-		//get all additional answers
-		for(int i = 0; i < ARCount; i++) {
-			additionalRecords[i] = getAnswer();
+		for(int i = 0; i < ARCount; i++){
+			additionalRecords[i] = getAnswer(index);
+			index += additionalRecords[i].getSize();
 		}
 	}
 
@@ -127,115 +139,96 @@ public class Response {
 	 * @return Next available AnswerRecord.
 	 * @throws Exception If an error was encountered while reading.
 	 */
-	private AnswerRecord getAnswer() throws Exception {
+	private AnswerRecord getAnswer(int readIndex) throws Exception {
 		AnswerRecord ar = new AnswerRecord();
+		ar.setAuth(AA);
+
+		int readByte = readIndex;
 
 		//NAME
-		ar.setName(readNextWords());
+		Pair p = readWordFromIndex(readByte);
+		readByte += p.i;
+
+		//Authority
+		ar.setAuth(AA);
 
 		//TYPE
-		QueryType qt = getQueryTypeFromBytes(readIndex);
+		QueryType qt = getQueryTypeFromBytes(readByte);
 		ar.setQueryType(qt);
-		readIndex += 2;
+		readByte += 2;
 
 		//CLASS
-		byte[] bClass = { response[readIndex], response[readIndex + 1] };
-        ByteBuffer buf = ByteBuffer.wrap(bClass);
+		byte[] bClass = { response[readByte], response[readByte + 1] };
+		ByteBuffer buf = ByteBuffer.wrap(bClass);
 		short qClass = buf.getShort();
 		if(qClass != (short) 0x01) {
 			throw new Exception("Answer CLASS should be 0x01, but " + qClass + " was found instead.");
 		}
-		readIndex += 2;
+		readByte += 2;
 
 		//TTL
-		byte[] ttlBytes = { response[readIndex], response[readIndex + 1], response[readIndex + 2], response[readIndex + 3] };
+		byte[] ttlBytes = {response[readByte], response[readByte + 1], response[readByte + 2], response[readByte + 3]};
 		ByteBuffer wrapTtl = ByteBuffer.wrap(ttlBytes);
 		ar.setTTL(wrapTtl.getInt());
-		readIndex += 4;
+		readByte += 4;
 
 		//RDLENGTH
-		ar.setRDLen(bytesToShort(response[readIndex], response[readIndex+1]));
-		readIndex += 2;
+		short rdLen = bytesToShort(response[readByte], response[readByte + 1]);
+		readByte += 2;
 
-		String rData = "";
+		Pair rData = new Pair();
 		//RDATA
 		switch(qt) {
 		case A:
-			byte[] byteAddress= { response[readIndex], response[readIndex + 1], response[readIndex + 2], response[readIndex + 3]};
+			byte[] byteAddress= {response[readByte], response[readByte + 1], response[readByte + 2], response[readByte + 3]};
 			InetAddress inetaddress = InetAddress.getByAddress(byteAddress);
-			rData = inetaddress.toString().substring(1);
-			readIndex += 4;
+			rData.name = inetaddress.toString().substring(1);
 			break;
 		case NS:
-			rData = readNextWords();
+			rData = readWordFromIndex(readByte);
 			break;
 		case MX:
 			//PREFERENCE
-			readIndex += 2;
-			rData = readNextWords();
+			rData = readWordFromIndex(readByte + 2);
 			break;
 		case CNAME:
-			rData = readNextWords();
+			rData = readWordFromIndex(readByte);
 		}
-		System.out.println(rData);
-		ar.setRData(rData);
+		readByte += rdLen;
+		ar.setSize(readByte - readIndex);
+		ar.setRData(rData.name);
 		return ar;
 	}
-	
-	/**
-	 * Gets the word from the index.
-	 * @param index Of the byte to start reading.
-	 * @return Words at that index.
-	 */
-	private String getWordAtOffset(int index) {
-		String word = "";
-    	int wordSize = response[index++];
-    	boolean start= true;
-    	while(wordSize != 0) {
-    		if(start) {
-    			start = false;
-    		}
-    		else {
-    			word += ".";
-    		}
-    		for(int i =0; i < wordSize; i++){
-        		word += (char) response[index++];
-    		}		
-    		wordSize = response[index++];
-    	}
-    	return word;
-    }
 
 	/**
-	 * Reads the next available word.
-	 * @return The next word to read.
+	 * Reads a word from a given index
+	 * @param index Start index of word.
+	 * @return Pair of both name and index.
 	 */
-	private String readNextWords() {
-		int index = readIndex;
+	private Pair readWordFromIndex(int index) {
 		int countByte = 0;
 		String name = "";
 		byte read = response[index];
 		boolean start = true;
 		while(read != (short) 0x0) {
 			if(start) {
-    			start = false;
-    		}
-    		else {
-    			name += ".";
-    		}
-			//System.out.print(index + " " + read + " | ");
-			int wordSize = read;
+				start = false;
+			}
+			else {
+				name += ".";
+			}
+			int wordSize = read;	
 			index++;
 			countByte++;
 			//check if it is a pointer
 			if ((wordSize & 0xC0) == (int) 0xC0) {
-//				System.out.print("Is pointer with offset ");
-				byte first = (byte) (response[index] & 0x3f);
-//				System.out.println(first);
-				String word = getWordAtOffset(first);
-				index += 1;
-				countByte += 1;
-				name += word;
+				//get pointer
+				short pointer = bytesToShort((byte) (response[index-1] & 0x3F), response[index]);
+				Pair word = readWordFromIndex(pointer);
+				index++;
+				countByte++;
+				name += word.name;
+				break;
 			}
 			else
 			{
@@ -246,10 +239,12 @@ public class Response {
 			}
 			read = response[index];
 		}
-		readIndex += countByte;
-		return name;
+		Pair p = new Pair();
+		p.name = name;
+		p.i = countByte;
+		return p;
 	}
-	
+
 	/**
 	 * Method that checks if the bit is 1.
 	 * @param b 	The byte to check
@@ -276,11 +271,9 @@ public class Response {
 	 * @return Query type of the byte.
 	 * @throws Exception If a bad type was encountered.
 	 */
-	private QueryType getQueryTypeFromBytes(int index) throws Exception {
+	private QueryType getQueryTypeFromBytes(int index) {
 		short qt = bytesToShort(response[index], response[index+1]);
 		switch(qt) {
-		case ((short) 0x01):
-			return QueryType.A;
 		case ((short) 0x02):
 			return QueryType.NS;
 		case ((short) 0x0f):
@@ -288,7 +281,7 @@ public class Response {
 		case ((short) 0x05):
 			return QueryType.CNAME;
 		}
-		throw new Exception("Answer record has wrong query type.");
+		return QueryType.A;
 	}
-	
+
 }

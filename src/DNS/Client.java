@@ -79,9 +79,9 @@ public class Client {
 	}
 
 	/**
-	 * Method that gets the response and prints it
-	 * @param response
-	 * @throws Exception
+	 * Method that gets the response and prints it.
+	 * @param response The response to print.
+	 * @throws Exception If an Error was encountered while reading.
 	 */
 	public void readResponse(Response response) throws Exception {
 		response.readHeader();
@@ -99,7 +99,7 @@ public class Client {
 			}
 		}
 		if(adr.length != 0) {
-			System.out.println("***Additional Section ("+adr.length+" records)***\n");
+			System.out.println("***Additional Section ("+adr.length+" records)***");
 			for(int i=0; i< adr.length;i++) {
 				AnswerRecord adrAnswer = adr[i];
 				printAnswer(adrAnswer);
@@ -113,17 +113,18 @@ public class Client {
 	 */
 	public void printAnswer(AnswerRecord answer) {
 		QueryType qType = answer.getQueryType();
+		String auth = answer.getAuth() ? "auth" : "nonauth";
 		if(qType.equals(QueryType.A)) {
-			System.out.println("IP\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+			System.out.println("IP\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+ auth);
 		}
 		if(qType.equals(QueryType.CNAME)) {
-			System.out.println("CNAME\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+			System.out.println("CNAME\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+ auth);
 		}
 		if(qType.equals(QueryType.MX)) {
-			System.out.println("MX\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+			System.out.println("MX\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+ auth);
 		}
 		if(qType.equals(QueryType.NS)) {
-			System.out.println("NS\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+"nonauth\n");
+			System.out.println("NS\t"+answer.getRData()+"\t"+answer.getTTL()+"\t"+ auth);
 		}	
 	}
 }

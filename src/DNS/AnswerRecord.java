@@ -1,25 +1,20 @@
 package DNS;
 
 public class AnswerRecord {
-	private String name;
+	private boolean auth;
 	private QueryType qType;
-	private int ttl, rDLen;
+	private int ttl;
 	private String rData;
-	
-	public AnswerRecord() {
-		
-	}
-	
-	public AnswerRecord(String name, QueryType type, byte[] qClass, int ttl) {
-		this.name = name;
-		this.qType = type;
-		this.ttl = ttl;
-	}
+	private int size;
 	
 	/* ======= SETTERS ======*/
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setAuth(Boolean a) {
+		this.auth = a;
+	}
+	
+	public void setSize(int s) {
+		this.size = s;
 	}
 	
 	public void setQueryType(QueryType q) {
@@ -30,18 +25,18 @@ public class AnswerRecord {
 		this.ttl = ttl;
 	}
 	
-	public void setRDLen(int rd) {
-		this.rDLen = rd;
-	}
-	
 	public void setRData(String rData) {
 		this.rData = rData;
 	}
 	
 	/* ======= GETTERS ======*/
 	
-	public String getName() {
-		return name;
+	public boolean getAuth() {
+		return auth;
+	}
+	
+	public int getSize() {
+		return size;
 	}
 	
 	public QueryType getQueryType() {
@@ -56,7 +51,4 @@ public class AnswerRecord {
 		return rData;
 	}
 	
-	public int getRDLen() {
-		return rDLen;
-	}
 }
