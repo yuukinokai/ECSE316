@@ -121,7 +121,7 @@ public class Request {
 			question.put((byte) 0x000f);
 			break;
 		default:
-			throw new Exception("Cannot request this type of query.");
+			throw new Exception("Request error: query type formatted wrong.");
 		}
 
 	}

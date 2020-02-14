@@ -54,13 +54,13 @@ public class Response {
 	 */
 	public void readHeader() throws Exception {
 		if(response.length < 12) {
-			throw new Exception("Wrong response size.");
+			throw new Exception("Header error: wrong response size.");
 		}
 		ID = bytesToShort(response[0], response[1]);
 
 		QR = isTrueBit(response[2], 7);
 		if(!QR) {
-			throw new Exception("Reponse expected, but header indicates otherwise.");
+			throw new Exception("Response error: reponse expected, but header indicates otherwise.");
 		}
 		OPCode = response[2] & 0x38;
 		AA = isTrueBit(response[2], 2);
@@ -68,7 +68,7 @@ public class Response {
 		RD = isTrueBit(response[2], 0);
 		RA = isTrueBit(response[3], 7);
 		if(!RA) {
-			throw new Exception("Server does not support recursiveness.");
+			throw new Exception("Server error: server does not support recursiveness.");
 		}
 		Z = response[3] & 0x70;
 
@@ -91,7 +91,7 @@ public class Response {
 
 		QDCount = bytesToShort(response[4], response[5]);
 		if(QDCount != 1) {
-			throw new Exception("QDCount should be 1 but " + QDCount + " was found.");
+			throw new Exception("Header error: QDCount should be 1 but " + QDCount + " was found.");
 		}
 		ANCount = bytesToShort(response[6], response[7]);		
 		NSCount = bytesToShort(response[8], response[9]);
@@ -162,7 +162,7 @@ public class Response {
 		ByteBuffer buf = ByteBuffer.wrap(bClass);
 		short qClass = buf.getShort();
 		if(qClass != (short) 0x01) {
-			throw new Exception("Answer CLASS should be 0x01, but " + qClass + " was found instead.");
+			throw new Exception("Answer error: answer CLASS should be 0x01, but " + qClass + " was found instead.");
 		}
 		readByte += 2;
 
