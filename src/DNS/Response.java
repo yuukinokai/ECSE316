@@ -127,6 +127,10 @@ public class Response {
 			answerRecords[i] = getAnswer(index);
 			index += answerRecords[i].getSize();
 		}
+		//ignore authority section
+		for(int i = 0; i < NSCount; i++){
+			index += getAnswer(index).getSize();
+		}
 
 		for(int i = 0; i < ARCount; i++){
 			additionalRecords[i] = getAnswer(index);
